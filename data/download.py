@@ -61,7 +61,7 @@ def extract_tar_gz(file_path, extract_to):
 
 
 def main():
-    data_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "raw")
     os.makedirs(data_dir, exist_ok=True)
 
     for name, url in DATASETS.items():

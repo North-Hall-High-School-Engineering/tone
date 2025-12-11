@@ -6,4 +6,5 @@
 !.gitignore
 
 !download.py
+!process_MELD.py
 !requirements.txt
