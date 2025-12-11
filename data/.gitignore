@@ -1,0 +1,9 @@
+# ignore everything due to fluid dir structure
+*
+
+# re-include documentation and scripts
+!README.txt
+!.gitignore
+
+!download.py
+!requirements.txt
