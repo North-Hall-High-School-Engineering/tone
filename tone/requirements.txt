@@ -65,10 +65,10 @@ soxr==1.0.0
 sympy==1.14.0
 threadpoolctl==3.6.0
 tokenizers==0.22.1
-torch==2.7.1+cu118
-torchaudio==2.7.1+cu118
+torch==2.7.1
+torchaudio==2.7.1
 torchcodec==0.9.1
-torchvision==0.22.1+cu118
+torchvision==0.22.1
 tqdm==4.67.1
 transformers==4.57.3
 typing_extensions==4.15.0

@@ -2,6 +2,8 @@
 
 To install Python 3.12, the recommended version for this project, visit https://www.python.org/downloads/release/python-3120/
 
+Make sure you get the installer and not the python manager as that will automatically install the newest version.
+
 Verify installation
 ```bash
   py --list
@@ -22,6 +24,11 @@ Create a venv with Python 3.12 as the primary version
 Activate the venv
 Windows: `.\.venv\Scripts\activate`
 Mac/Linux: `source .venv/bin/activate`
+
+Install deps inside tone dir
+```
+  pip install -r requirements.txt
+```
 
 If running on an NVIDIA GPU, make sure to install CUDA from https://developer.nvidia.com/cuda-downloads
 
