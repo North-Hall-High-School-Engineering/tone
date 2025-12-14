@@ -32,15 +32,19 @@ Install deps inside tone dir
 
 If running on an NVIDIA GPU, make sure to install CUDA from https://developer.nvidia.com/cuda-downloads
 
+If you want to run the training on your gpu, run these commands in the venv
+```bash
+    pip uninstall torch torchaudio torchvision
+```
+
+```bash
+  pip install torch torchaudio torchvision --index-url https://download.pytorch.org/whl/cu118
+```
+
 Common Issues
 
 "Torch not compiled with CUDA enabled"
 Install CUDA from https://developer.nvidia.com/cuda-downloads or switch to cpu device within torch. If you have already installed cuda, just restart your terminal and the problem will likely be fixed. If the issue persists, restart your computer and/or re-install cuda.
-
-If it STILL doesen't work, install torch matching your CUDA version with the following command (within the venv)
-```bash
-  pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
-```
 
 RuntimeError: Could not load libtorchcodec. Likely causes:
           1. FFmpeg is not properly installed in your environment. We support
