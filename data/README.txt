@@ -1,4 +1,0 @@
-Data dir houses the raw datasets used to train the TONE SER model. This directory is empty on the remote due to the large sizes of the used datasets, please run download.py on your local machine to fetch the datasets.
-
-https://www.gyan.dev/ffmpeg/builds/
-https://github.com/kkroening/ffmpeg-python
