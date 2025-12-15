@@ -3,6 +3,7 @@
 To install Python 3.12, the recommended version for this project, visit https://www.python.org/downloads/release/python-3120/
 
 Make sure you get the installer and not the python manager as that will automatically install the newest version.
+Windows (x64): https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 
 Verify installation
 ```bash
@@ -34,7 +35,7 @@ If running on an NVIDIA GPU, make sure to install CUDA from https://developer.nv
 
 If you want to run the training on your gpu, run these commands in the venv
 ```bash
-    pip uninstall torch torchaudio torchvision
+  pip uninstall torch torchaudio torchvision
 ```
 
 ```bash

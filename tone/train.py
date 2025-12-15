@@ -105,3 +105,25 @@ if __name__ == "__main__":
     trainer.save_model(".")
     test_metrics = trainer.evaluate(dataset["test"])
     print(test_metrics)
+
+    inference_model = trainer.model.model
+    inference_model.cpu()
+    inference_model.eval()
+
+    dummy_input_values = torch.randn(1, 16000)  # 1 second @ 16kHz
+    dummy_attention_mask = torch.ones(1, 16000, dtype=torch.long)
+
+    torch.onnx.export(
+        model=inference_model,
+        args=(dummy_input_values, dummy_attention_mask),
+        f="tone_ser.onnx",
+        input_names=["input_values", "attention_mask"],
+        output_names=["preds"],
+        dynamic_axes={
+            "input_values": {0: "batch", 1: "time"},
+            "attention_mask": {0: "batch", 1: "time"},
+            "preds": {0: "batch"},
+        },
+        opset_version=17,
+        do_constant_folding=True,
+    )
