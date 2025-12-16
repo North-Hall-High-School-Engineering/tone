@@ -1,8 +1,7 @@
 from functools import partial
 
-import torch
-import evaluate
 import numpy as np
+import torch
 from datasets import Audio, load_dataset
 from transformers import (
     EarlyStoppingCallback,
@@ -50,7 +49,6 @@ def collate_fn_train(batch, feature_extractor):
         "labels": labels,
     }
 
-metric = evaluate.load("mse")
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
@@ -66,7 +64,9 @@ if __name__ == "__main__":
     if torch.cuda.is_available():
         print("Using GPU")
     else:
-        print("Using CPU\nPlease refer to SETUP.md to set up CUDA/GPU for faster training")
+        print(
+            "Using CPU\nPlease refer to SETUP.md to set up CUDA/GPU for faster training"
+        )
 
     dataset = load_dataset("AbstractTTS/IEMOCAP")
     dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
