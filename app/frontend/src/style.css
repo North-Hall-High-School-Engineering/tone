@@ -1,14 +1,1 @@
 @import "tailwindcss";
-
-#orb {
-    width: 128px;
-    height: 128px;
-    border-radius: 100%;
-    background: radial-gradient(
-        circle at 55% 30%,
-        #ffd27d,
-        #ff9a2f 40%,
-        #ff6a00 70%,
-        #f55551 100%
-    );
-}
