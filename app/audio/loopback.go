@@ -10,3 +10,7 @@ type Loopback interface {
 	// Next chunk of audio as f32 PCM
 	Read() ([]float32, error)
 }
+
+func NewLoopback() Loopback {
+	return &windowsLoopback{}
+}
