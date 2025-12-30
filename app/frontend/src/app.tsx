@@ -20,7 +20,11 @@ export function App(props: any) {
     <>
       <div class="w-screen h-screen flex flex-col items-center">
         <div className="w-full h-1/2">
-          <Orb displacementStrength={0.5} noiseIntensity={0.125} />
+          <Orb 
+            displacementStrength={0.5} 
+            noiseIntensity={0.125} 
+            color={0xe4ecfa}
+            />
         </div>
         <div className="w-full h-full items-start p-4">
           <h3>Audio Debug Info:</h3>

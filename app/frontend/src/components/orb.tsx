@@ -6,9 +6,10 @@ import { createNoise3D } from "simplex-noise";
 export type OrbProps = {
   displacementStrength: number;
   noiseIntensity: number;
+  color: number;
 };
 
-export function Orb({ displacementStrength, noiseIntensity }: OrbProps) {
+export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export function Orb({ displacementStrength, noiseIntensity }: OrbProps) {
 
     const geometry = new THREE.SphereGeometry(1, 128, 128);
     const material = new THREE.MeshPhongMaterial({
-      color: 0xe4ecfa,
+      color: color,
       shininess: 100,
     });
     const sphere = new THREE.Mesh(geometry, material);
