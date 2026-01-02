@@ -1,13 +1,10 @@
 package main
 
 import (
-	"app/assets"
 	"app/audio"
 	"app/ort"
 	"context"
 	"log"
-	"os"
-	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"github.com/yalue/onnxruntime_go"
@@ -43,23 +40,13 @@ func (a *App) startup(ctx context.Context) {
 	}
 	a.lo = lo
 
-	runtimePath, err := ort.ExtractEmbeddedOrt()
+	libraryPath, modelPath, err := ort.ExtractEmbeddedOrt()
 	if err != nil {
 		panic(err)
 	}
-	onnxruntime_go.SetSharedLibraryPath(runtimePath)
+	onnxruntime_go.SetSharedLibraryPath(libraryPath)
 
 	if err := onnxruntime_go.InitializeEnvironment(); err != nil {
-		panic(err)
-	}
-
-	data, err := assets.FS.ReadFile("models/tone.onnx")
-	if err != nil {
-		panic(err)
-	}
-
-	tmpFile := filepath.Join(os.TempDir(), "tone.onnx")
-	if err := os.WriteFile(tmpFile, data, 0755); err != nil {
 		panic(err)
 	}
 
@@ -87,7 +74,7 @@ func (a *App) startup(ctx context.Context) {
 	}
 
 	a.session, err = onnxruntime_go.NewAdvancedSession(
-		tmpFile,
+		modelPath,
 		[]string{"input_values", "attention_mask"},
 		[]string{"preds"},
 		[]onnxruntime_go.Value{a.inputTensor, a.maskTensor},
