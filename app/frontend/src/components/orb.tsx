@@ -12,6 +12,7 @@ export type OrbProps = {
 export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const materialRef = useRef<THREE.MeshPhongMaterial | null>(null);
+  const targetColorRef = useRef(new THREE.Color(color));
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -83,6 +84,11 @@ export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
       geometry.computeVertexNormals();
 
       sphere.rotation.y += 0.003;
+
+      if (materialRef.current) {
+      materialRef.current.color.lerp(targetColorRef.current, 0.02);
+    }
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
@@ -97,10 +103,10 @@ export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
   }, [displacementStrength, noiseIntensity]);
 
   useEffect(() => {
-    if (materialRef.current) {
-      materialRef.current.color.set(color);
-    }
-  }, [color]);
+  targetColorRef.current.set(color);
+}, [color]);
+
+
 
   return <div ref={mountRef} style={{ width: "100%", height: "100%" }} />;
 }
