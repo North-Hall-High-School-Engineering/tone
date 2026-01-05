@@ -14,6 +14,7 @@ typedef struct Loopback Loopback;
 Loopback* loopback_start();
 int loopback_read(Loopback *lb, BYTE **data, UINT32 *numFrames);
 void loopback_stop(Loopback *lb);
+WAVEFORMATEX* loopback_get_waveformat(Loopback* lb);
 
 #ifdef __cplusplus
 }

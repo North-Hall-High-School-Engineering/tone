@@ -102,3 +102,8 @@ extern "C" void loopback_stop(Loopback* lb) {
     delete lb;
     CoUninitialize();
 }
+
+extern "C" WAVEFORMATEX* loopback_get_waveformat(Loopback* lb) {
+    if (!lb) return nullptr;
+    return lb->pwfx;
+}

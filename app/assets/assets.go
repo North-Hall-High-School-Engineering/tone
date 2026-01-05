@@ -13,8 +13,8 @@ var FS embed.FS
 
 const ONNX_VERSION = "1.23.2"
 
-// Extracts embedded onxxruntime(.dll | .dylib | .so) and model.onnx to concrete location, returns lib path, model path, and error
-func ExtractEmbeddedFiles() (string, string, error) {
+// Extracts embedded onxxruntime(.dll | .dylib | .so) and model.onnx to concrete location, returns lib path, model path, vad path, and error
+func ExtractEmbeddedFiles() (string, string, string, error) {
 	goos := runtime.GOOS
 	goarch := runtime.GOARCH
 
@@ -27,12 +27,12 @@ func ExtractEmbeddedFiles() (string, string, error) {
 	case "windows":
 		onnxLibraryFile = "onnxruntime.dll"
 	default:
-		return "", "", fmt.Errorf("unsupported os %s", goos)
+		return "", "", "", fmt.Errorf("unsupported os %s", goos)
 	}
 
 	configDir, err := os.UserConfigDir()
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
 	runtimeRoot := path.Join(configDir, "tone", "runtime")
@@ -49,11 +49,11 @@ func ExtractEmbeddedFiles() (string, string, error) {
 
 	upToDate, err := isUpToDate(modelVerRelPath, modelVerDest)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
 	if upToDate {
-		return libDest, modelDest, nil
+		return libDest, modelDest, sileroDest, nil
 	}
 
 	files := map[string]string{
@@ -66,19 +66,19 @@ func ExtractEmbeddedFiles() (string, string, error) {
 	for src, dest := range files {
 		data, err := FS.ReadFile(src)
 		if err != nil {
-			return "", "", fmt.Errorf("read embedded %s: %w", src, err)
+			return "", "", "", fmt.Errorf("read embedded %s: %w", src, err)
 		}
 
 		if err := os.MkdirAll(path.Dir(dest), 0755); err != nil {
-			return "", "", err
+			return "", "", "", err
 		}
 
 		if err := os.WriteFile(dest, data, 0644); err != nil {
-			return "", "", fmt.Errorf("write %s: %w", dest, err)
+			return "", "", "", fmt.Errorf("write %s: %w", dest, err)
 		}
 	}
 
-	return libDest, modelDest, nil
+	return libDest, modelDest, sileroDest, nil
 }
 
 func isUpToDate(embeddedVerPath, extractedVerPath string) (bool, error) {
