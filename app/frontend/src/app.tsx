@@ -15,11 +15,27 @@ const EMOTION_LABELS = [
   "happy",
 ];
 
+const EMOTIONAL_COLORS = [
+ 0xFF8C42, //frustrated burnt orange
+  0xC1121F, // angry deep red
+  0x4A6FA5, //sad muted blue
+  0x6A994E, //disgust olive green
+  0xFFD166, //excited bright yellow
+  0x3A0CA3, //fear deep purple
+  0xB0B0B0, //neutral gray
+  0x00B4D8, //surprise vibrant cyan
+  0xFFEB3B  //happy bright yellow
+];
+
+
+
+
 export function App(props: any) {
   const [preds, setPreds] = useState<number[]>(
     new Array(EMOTION_LABELS.length).fill(0),
   );
   const [vad, setVad] = useState<number>(0);
+
 
   useEffect(() => {
     const offVad = EventsOn("vad", (p: number) => {
@@ -27,7 +43,7 @@ export function App(props: any) {
     });
 
     const offInf = EventsOn("inference", (values: number[]) => {
-      setPreds(values);
+      setPreds([...values]);
     });
 
     return () => {
@@ -36,6 +52,11 @@ export function App(props: any) {
     };
   }, []);
 
+  const dominantIndex = preds.reduce(
+    (best, val, i) => (val > preds[best] ? i : best),
+    0
+  );
+
   return (
     <div class="w-screen h-screen flex flex-col items-center p-4">
       {/* Orb */}
@@ -43,7 +64,7 @@ export function App(props: any) {
         <Orb
           displacementStrength={0.5}
           noiseIntensity={0.125}
-          color={0xe4ecfa}
+          color={EMOTIONAL_COLORS[dominantIndex]}
         />
       </div>
 

@@ -11,6 +11,7 @@ export type OrbProps = {
 
 export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
+  const materialRef = useRef<THREE.MeshPhongMaterial | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -52,6 +53,8 @@ export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
+    materialRef.current = material;
+
     const originalPositions = geometry.attributes.position.array.slice();
 
     const simplex = createNoise3D();
@@ -92,6 +95,12 @@ export function Orb({ displacementStrength, noiseIntensity, color }: OrbProps) {
       renderer.dispose();
     };
   }, [displacementStrength, noiseIntensity]);
+
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.color.set(color);
+    }
+  }, [color]);
 
   return <div ref={mountRef} style={{ width: "100%", height: "100%" }} />;
 }
