@@ -3,15 +3,19 @@ import os
 import shutil
 import urllib.request
 import zipfile
+import torch
+import evaluate
+import numpy as np 
 
 from datasets import Audio, Dataset
+from transformers import feature_extractor
 from tqdm import tqdm
 
 # !wget -q https://zenodo.org/record/1188976/files/Audio_Speech_Actors_01-24.zip
 # !unzip -q Audio_Speech_Actors_01-24.zip -d ravdess
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
+accuracy = evaluate.load("accuracy")
 
 def cleanup(paths):
     for path in paths:
@@ -73,6 +77,30 @@ def load_ravdess_dataset(ravdess_archive, ravdess_dir):
             except Exception as e:
                 print(f"Failed to remove archive {ravdess_archive}: {e}")
 
+def collate_fn_train(batch, feature_extractor):
+    audio = [example["audio"]["array"] for example in batch]
+    labels = torch.tensor([example["label"] for example in batch])
+
+    inputs = feature_extractor(
+        audio,
+        sampling_rate=16000,
+        padding=True,
+        return_tensor="pt",
+    )
+
+    inputs["labels"]=labels
+    return {
+      "input_values": features["input_values"],
+      "attention_mask": features["attention_mask"],
+      "labels": labels,
+    }
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred 
+    preds = np.argmax(logits, axis=-1)
+    acc = accuracy.compute(predictions=preds, references=labels)["accuracy"]
+
+    return {"accuracy": acc}
 
 def main():
     ravdess_dir = os.path.join(SCRIPT_DIR, "ravdess")
