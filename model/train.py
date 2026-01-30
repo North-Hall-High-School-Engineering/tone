@@ -8,7 +8,6 @@ import evaluate
 import numpy as np 
 
 from datasets import Audio, Dataset
-from transformers import feature_extractor
 from tqdm import tqdm
 
 # !wget -q https://zenodo.org/record/1188976/files/Audio_Speech_Actors_01-24.zip
@@ -81,14 +80,14 @@ def collate_fn_train(batch, feature_extractor):
     audio = [example["audio"]["array"] for example in batch]
     labels = torch.tensor([example["label"] for example in batch])
 
-    inputs = feature_extractor(
+    features = feature_extractor(
         audio,
         sampling_rate=16000,
         padding=True,
         return_tensor="pt",
     )
 
-    inputs["labels"]=labels
+    features["labels"] = labels
     return {
       "input_values": features["input_values"],
       "attention_mask": features["attention_mask"],
