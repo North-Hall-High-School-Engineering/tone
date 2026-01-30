@@ -153,6 +153,21 @@ def main():
     dataset["train"] = val_split["train"]
     dataset["validation"] = val_split["test"]
 
+    training_args = TrainingArguments(
+        per_device_train_batch_size = 4,
+        num_train_epochs = 5,
+        learning_rate = 1e-5,
+        logging_steps = 20,
+        logging_strategy = "epoch",
+        save_strategy = "epoch",
+        fp16=True,
+        remove_unused_columns=False,
+        eval_strategy = "epoch",
+        metric_for_best_model = "eval_accuracy",
+        load_best_model_at_end=True,
+        report_to="none"
+    )
+    
 
 if __name__ == "__main__":
     main()
