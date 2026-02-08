@@ -1,3 +1,5 @@
 data/*
 ravdess*
 __pycache__
+.cache
+out
