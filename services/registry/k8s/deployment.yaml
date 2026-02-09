@@ -21,3 +21,8 @@ spec:
             - name: registry-manifests
               mountPath: /manifests
               readOnly: true
+
+      volumes:
+        - name: registry-manifests
+          configMap:
+            name: registry-manifests
