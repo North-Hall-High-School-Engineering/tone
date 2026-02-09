@@ -23,13 +23,16 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker us-east1-docker.pkg.dev
 
+      - uses: "google-github-actions/setup-gcloud@v2"
+        with:
+          install_components: "gke-gcloud-auth-plugin"
+
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
           cluster_name: tone-cluster
           location: us-east1-b
           project_id: tone-486901
-          use_auth_plugin: true
 
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials tone-cluster --zone us-east1-b
