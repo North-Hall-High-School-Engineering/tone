@@ -26,6 +26,11 @@ jobs:
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials tone-cluster --zone us-east1-b
 
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin --quiet
+          kubectl version --client
+
       - name: Build and deploy services
         run: |
           SERVICES="registry analytics"  # list your services here
