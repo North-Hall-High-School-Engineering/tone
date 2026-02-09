@@ -50,3 +50,14 @@ jobs:
           kubectl apply -f ./services/registry/k8s/
 
           kubectl rollout restart deployment tone-registry
+
+      - name: Build and deploy inference service
+        run: |
+
+          docker buildx build --platform linux/amd64 \
+            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/inference:latest \
+            ./services/inference --push
+
+          kubectl apply -f ./services/inference/k8s/
+
+          kubectl rollout restart deployment tone-inference
