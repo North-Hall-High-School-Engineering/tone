@@ -28,8 +28,7 @@ jobs:
 
       - name: Install gke-gcloud-auth-plugin
         run: |
-          gcloud components install gke-gcloud-auth-plugin --quiet
-          kubectl version --client
+          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
 
       - name: Build and deploy services
         run: |
