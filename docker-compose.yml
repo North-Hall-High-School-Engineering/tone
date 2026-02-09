@@ -13,8 +13,13 @@ services:
   inference:
     build:
       context: ./services/inference
+    depends_on:
+      - registry
     container_name: "tone-inference"
+    ports:
+      - "8000:8080"
     environment:
+      - PORT=8080
       - REGISTRY_URL=http://registry:8080
       - MODEL_NAME=tone
       - MODEL_VERSION=1.0.0

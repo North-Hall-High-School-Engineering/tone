@@ -1,7 +1,9 @@
 import hashlib
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
+from google.cloud import storage
 
 
 def sha256_file(path: Path) -> str:
@@ -12,17 +14,23 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def download_file(url: str, dest: Path, expected_sha256: str = ""):
+def download_file(url: str, type: str, dest: Path, expected_sha256: str = ""):
     dest.parent.mkdir(parents=True, exist_ok=True)
 
     if dest.exists() and expected_sha256 and sha256_file(dest) == expected_sha256:
         return dest
+    match type:
+        case "gcs":
+            p = urlparse(url)
+            bucket_name = p.netloc
+            blob_name = p.path.lstrip("/")
 
-    resp = requests.get(url, stream=True)
-    resp.raise_for_status()
-    with open(dest, "wb") as f:
-        for chunk in resp.iter_content(8192):
-            f.write(chunk)
+            client = storage.Client()
+            bucket = client.bucket(bucket_name)
+            blob = bucket.blob(blob_name)
+
+            if blob.exists():
+                blob.download_to_filename(dest)
 
     if expected_sha256 and sha256_file(dest) != expected_sha256:
         raise RuntimeError(f"SHA256 mismatch for {dest}")
@@ -45,10 +53,11 @@ def get_artifacts(manifest, cache_dir: Path):
 
     for key, info in artifacts.items():
         url = info["url"]
-        sha = info.get("sha256") or manifest["model"].get("sha256")
+        sha = info["sha256"]
+        type = info["type"]
         filename = Path(url).name
         dest = model_dir / filename
-        download_file(url, dest, expected_sha256=sha)
+        download_file(url, type, dest, expected_sha256=sha)
         local_paths[key] = dest
 
     return local_paths
