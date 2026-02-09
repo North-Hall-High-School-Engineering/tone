@@ -17,3 +17,7 @@ spec:
           image: us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-registry:latest
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: registry-manifests
+              mountPath: /manifests
+              readOnly: true
