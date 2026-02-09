@@ -50,7 +50,9 @@ def get_manifest(registry: str, model_name: str, model_version: str):
 
 def get_artifacts(manifest, cache_dir: Path):
     artifacts = manifest.get("artifacts", {})
-    model_dir = cache_dir / manifest["model"]["name"] / manifest["model"]["version"]
+    model_dir = (
+        cache_dir / f"{manifest['model']['name']}-{manifest['model']['version']}"
+    )
     local_paths = {}
 
     for key, info in artifacts.items():
