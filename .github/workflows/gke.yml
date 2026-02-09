@@ -37,27 +37,16 @@ jobs:
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials tone-cluster --zone us-east1-b
 
-      - name: Build and deploy services
+      - name: Build and deploy registry
         run: |
-          SERVICES="registry analytics"  # list your services here
-          for SERVICE in $SERVICES; do
-            echo "Deploying $SERVICE..."
+          docker buildx build --platform linux/amd64 \
+            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/registry:latest \
+            ./services/registry --push
 
-            # Build & push Docker image
-            docker buildx build --platform linux/amd64 \
-              -t us-east1-docker.pkg.dev/tone-486901/tone-repo/$SERVICE:latest \
-              ./services/$SERVICE --push
+          kubectl create configmap registry-manifests \
+            --from-file=./manifests \
+            --dry-run=client -o yaml | kubectl apply -f -
 
-            # ONLY create ConfigMap for registry service
-            if [ "$SERVICE" == "registry" ]; then
-              kubectl create configmap registry-manifests \
-                --from-file=./manifests \
-                --dry-run=client -o yaml | kubectl apply -f -
-            fi
+          kubectl apply -f ./services/registry/k8s/
 
-            # Apply k8s manifests
-            kubectl apply -f ./services/$SERVICE/k8s/
-
-            # Restart pods to pick up new ConfigMap
-            kubectl rollout restart deployment $SERVICE
-          done
+          kubectl rollout restart deployment tone-registry
