@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "model": {
+    "name": "tone",
+    "version": "1.0.0",
+    "sha256": "60afab6c8ea0d581969e0ae51a01eb9313bdc2f7af34504329e048fafcc82a7f",
+    "size_bytes": 1262928112,
+    "format": "safetensors"
+  },
+
+  "audio": {
+    "sample_rate": 16000,
+    "channels": 1,
+    "max_duration_ms": 5000
+  },
+
+  "labels": {
+    "neutral": 0,
+    "happy": 1,
+    "sad": 2,
+    "angry": 3,
+    "fear": 4,
+    "disgust": 5
+  },
+
+  "artifacts": {
+    "model": "model.safetensors",
+    "config": "config.json",
+    "feature_extractor": "preprocessor_config.json"
+  }
+}

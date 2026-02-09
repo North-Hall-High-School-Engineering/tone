@@ -1,0 +1,12 @@
+services:
+  registry:
+    build:
+      context: ./services/registry
+    container_name: tone-registry
+    environment:
+      - MODEL_MANIFEST_PATH=/app/manifests
+    volumes:
+      - ./manifests:/app/manifests:ro
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
