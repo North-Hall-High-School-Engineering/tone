@@ -23,14 +23,13 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker us-east1-docker.pkg.dev
 
-      - name: Get gcloud extentions
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y kubectl
-          curl -Lo gke-gcloud-auth-plugin.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/components/gke-gcloud-auth-plugin-linux-x86_64.tar.gz
-          tar -xzf gke-gcloud-auth-plugin.tar.gz
-          chmod +x gke-gcloud-auth-plugin
-          sudo mv gke-gcloud-auth-plugin /usr/local/bin/
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: tone-cluster
+          location: us-east1-b
+          project_id: tone-486901
+          use_auth_plugin: true
 
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials tone-cluster --zone us-east1-b
