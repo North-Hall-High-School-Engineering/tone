@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tone-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tone-registry
+  template:
+    metadata:
+      labels:
+        app: tone-registry
+    spec:
+      containers:
+        - name: tone-registry
+          image: us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-registry:latest
+          ports:
+            - containerPort: 8080

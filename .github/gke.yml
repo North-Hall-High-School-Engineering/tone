@@ -1,0 +1,48 @@
+name: CI/CD Tone-Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-registry:latest \
+            --push .
+
+      - name: Set up kubectl
+        run: |
+          gcloud container clusters get-credentials tone-cluster --zone us-east1-b
+
+      - name: Apply manifests ConfigMap
+        run: |
+          kubectl create configmap tone-manifests \
+            --from-file=./manifests \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy registry to GKE
+        run: |
+          kubectl apply -f services/registry/k8s/deployment.yaml
+          kubectl apply -f services/registry/k8sk8s/service.yaml
+          # Optional: force restart pods to pick up new ConfigMap
+          kubectl rollout restart deployment tone-registry
