@@ -14,7 +14,7 @@ type FS struct {
 }
 
 func (s *FS) Load(name, version string) (*manifest.Manifest, error) {
-	path := filepath.Join(s.Path, name, version+".json")
+	path := filepath.Join(s.Path, name+"-"+version+".json")
 	log.Println(path)
 	data, err := os.ReadFile(path)
 	if err != nil {
