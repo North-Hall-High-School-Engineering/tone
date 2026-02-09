@@ -31,7 +31,7 @@
       "url": "https://storage.cloud.google.com/tone-ml/tone/1.0.0/config.json"
     },
     "feature_extractor": {
-      "url": "https://storage.cloud.google.com/tone-ml/tone/1.0.0/tone-ml/tone/1.0.0/preprocessor_config.json"
+      "url": "https://storage.cloud.google.com/tone-ml/tone/1.0.0/preprocessor_config.json"
     }
   }
 }
