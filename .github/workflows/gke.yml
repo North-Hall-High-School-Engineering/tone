@@ -23,6 +23,12 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker us-east1-docker.pkg.dev
 
+      - name: Get gcloud extentions
+        run: |
+          apt-get update
+          apt-get install -y kubectl
+          apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials tone-cluster --zone us-east1-b
 
