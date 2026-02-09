@@ -26,17 +26,6 @@ jobs:
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials tone-cluster --zone us-east1-b
 
-      - name: Install GKE auth plugin
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-
-          # Install gke-gcloud-auth-plugin
-          curl -LO https://dl.google.com/dl/cloudsdk/channels/rapid/components/gke-gcloud-auth-plugin-linux-x86_64.tar.gz
-          tar -xzf gke-gcloud-auth-plugin-linux-x86_64.tar.gz
-          sudo mv gke-gcloud-auth-plugin /usr/local/bin/
-
       - name: Build and deploy services
         run: |
           SERVICES="registry analytics"  # list your services here
