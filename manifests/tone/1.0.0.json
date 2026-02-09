@@ -15,12 +15,12 @@
   },
 
   "labels": {
-    "neutral": 0,
-    "happy": 1,
-    "sad": 2,
-    "angry": 3,
-    "fear": 4,
-    "disgust": 5
+    "angry": 0,
+    "disgust": 1,
+    "fearful": 2,
+    "happy": 3,
+    "neutral": 4,
+    "sad": 5
   },
 
   "artifacts": {

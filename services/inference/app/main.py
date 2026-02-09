@@ -1,9 +1,11 @@
+import io
 import os
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+import librosa
+import torch
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
-from transformers import AutoFeatureExtractor, WavLMForSequenceClassification
 
 from .loader import load
 from .util import get_model_loader
@@ -23,8 +25,6 @@ artifacts, manifest = load(
 )
 
 model_dir = Path(artifacts["model"]).parent
-model = WavLMForSequenceClassification.from_pretrained(str(model_dir))
-feature_extractor = AutoFeatureExtractor.from_pretrained(str(model_dir))
 
 loader = get_model_loader(MODEL_NAME, MODEL_VERSION)
 loader.load(model_dir)
@@ -41,11 +41,18 @@ class Response(BaseModel):
 
 
 @app.post("/v1/infer", response_model=Response)
-async def infer(req: Request):
+async def infer(file: UploadFile = File(...)):
     try:
-        result = loader.infer(
-            {"input_values": req.input_values, "attention_mask": req.attention_mask}
+        audio_bytes = await file.read()
+
+        waveform, sr = librosa.load(
+            io.BytesIO(audio_bytes),
+            sr=16000,
+            mono=True,
         )
+
+        result = loader.infer(waveform, 16000)
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

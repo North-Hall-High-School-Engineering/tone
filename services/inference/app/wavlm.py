@@ -14,9 +14,7 @@ class WavLMModelLoader(BaseModelLoader):
         self.device = torch.device(device)
 
     def load(self, model_dir: Path):
-        self.model = WavLMForSequenceClassification.from_pretrained(
-            model_dir, device_map=None
-        )
+        self.model = WavLMForSequenceClassification.from_pretrained(model_dir)
         self.feature_extractor = AutoFeatureExtractor.from_pretrained(model_dir)
 
         assert self.model is not None
@@ -25,21 +23,27 @@ class WavLMModelLoader(BaseModelLoader):
         self.model.to(self.device)
         self.model.eval()
 
-    def infer(self, inputs: dict):
+    def infer(self, waveform: np.ndarray, sample_rate: int):
         assert self.model is not None
         assert self.feature_extractor is not None
 
-        input_values = torch.tensor([inputs["input_values"]], dtype=torch.float32).to(
-            self.device
-        )
-        attention_mask = torch.tensor([inputs["attention_mask"]], dtype=torch.long).to(
-            self.device
+        inputs = self.feature_extractor(
+            waveform,
+            sampling_rate=sample_rate,
+            return_tensors="pt",
+            padding=True,
         )
 
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
         with torch.no_grad():
-            logits = self.model(
-                input_values=input_values, attention_mask=attention_mask
-            ).logits
-        logits = logits.cpu().numpy()[0]
+            outputs = self.model(**inputs)
+            logits = outputs.logits
+
+        logits = logits.detach().cpu().numpy()[0]
         pred = int(np.argmax(logits))
-        return {"prediction": pred, "scores": logits.tolist()}
+
+        return {
+            "prediction": pred,
+            "scores": logits.tolist(),
+        }

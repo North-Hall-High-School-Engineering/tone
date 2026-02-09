@@ -1,7 +1,9 @@
 import hashlib
 from pathlib import Path
+from typing import Any, Dict
 from urllib.parse import urlparse
 
+import numpy as np
 import requests
 from google.cloud import storage
 
@@ -74,8 +76,8 @@ def load(*, registry: str, model_name: str, model_version: str, cache_dir: Path)
 
 
 class BaseModelLoader:
-    def load(self, model_dir: Path):
+    def load(self, model_dir: Path) -> None:
         raise NotImplementedError()
 
-    def infer(self, inputs: dict) -> dict:
+    def infer(self, waveform: np.ndarray, sample_rate: int) -> Dict[str, Any]:
         raise NotImplementedError()
