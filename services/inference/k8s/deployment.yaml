@@ -32,13 +32,6 @@ spec:
           volumeMounts:
             - name: model-cache
               mountPath: /cache/models
-          resources:
-            requests:
-              cpu: "500m"
-              memory: "1Gi"
-            limits:
-              cpu: "2"
-              memory: "4Gi"
       volumes:
         - name: model-cache
           emptyDir: {}
