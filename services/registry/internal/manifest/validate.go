@@ -1,6 +1,8 @@
 package manifest
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (m *Manifest) Validate() error {
 	if m.SchemaVersion == "" {
@@ -10,14 +12,24 @@ func (m *Manifest) Validate() error {
 		return fmt.Errorf("model name/version required")
 	}
 
-	if m.Artifacts.Model.URL == "" {
-		return fmt.Errorf("artifact 'model.url' required")
+	if len(m.Artifacts) == 0 {
+		return fmt.Errorf("artifacts required")
 	}
-	// if m.Artifacts.Config.URL == "" {
-	// 	return fmt.Errorf("artifact 'config.url' required")
-	// }
-	if m.Artifacts.FeatureExtractor.URL == "" {
-		return fmt.Errorf("artifact 'feature_extractor.url' required")
+
+	for name, artifact := range m.Artifacts {
+		if artifact.URL == "" {
+			return fmt.Errorf("artifact '%s.url' required", name)
+		}
+		if artifact.SHA256 == "" {
+			return fmt.Errorf("artifact '%s.sha256' required", name)
+		}
+		if artifact.Type == "" {
+			return fmt.Errorf("artifact '%s.type' required", name)
+		}
+	}
+
+	if _, ok := m.Artifacts["model"]; !ok {
+		return fmt.Errorf("artifact 'model' required")
 	}
 
 	if m.Audio != nil {

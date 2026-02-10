@@ -8,7 +8,7 @@ type Manifest struct {
 	Audio  *AudioSpec     `json:"audio,omitempty"`
 	Labels map[string]int `json:"labels,omitempty"`
 
-	Artifacts ArtifactsSpec `json:"artifacts"`
+	Artifacts map[string]Artifact `json:"artifacts"`
 }
 
 type ModelSpec struct {
@@ -24,12 +24,6 @@ type AudioSpec struct {
 	SampleRate    int `json:"sample_rate"`
 	Channels      int `json:"channels"`
 	MaxDurationMS int `json:"max_duration_ms"`
-}
-
-type ArtifactsSpec struct {
-	Model            Artifact `json:"model"`
-	Config           Artifact `json:"config"`
-	FeatureExtractor Artifact `json:"feature_extractor"`
 }
 
 type Artifact struct {
