@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: tone-registry
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: tone-registry

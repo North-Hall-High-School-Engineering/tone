@@ -5,7 +5,6 @@ metadata:
   labels:
     app: tone-inference
 spec:
-  replicas: 2
   selector:
     matchLabels:
       app: tone-inference
@@ -25,7 +24,7 @@ spec:
             - name: MODEL_NAME
               value: "tone"
             - name: MODEL_VERSION
-              value: "1.0.0"
+              value: "1.0.1"
             - name: MODEL_CACHE_DIR
               value: "/cache/models"
           volumeMounts:

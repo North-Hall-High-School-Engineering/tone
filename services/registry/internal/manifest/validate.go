@@ -13,9 +13,9 @@ func (m *Manifest) Validate() error {
 	if m.Artifacts.Model.URL == "" {
 		return fmt.Errorf("artifact 'model.url' required")
 	}
-	if m.Artifacts.Config.URL == "" {
-		return fmt.Errorf("artifact 'config.url' required")
-	}
+	// if m.Artifacts.Config.URL == "" {
+	// 	return fmt.Errorf("artifact 'config.url' required")
+	// }
 	if m.Artifacts.FeatureExtractor.URL == "" {
 		return fmt.Errorf("artifact 'feature_extractor.url' required")
 	}

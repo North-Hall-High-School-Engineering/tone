@@ -2,20 +2,22 @@ import io
 import os
 from pathlib import Path
 
+import numpy as np
+import soundfile as sf
 import torch
 import torchaudio
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from .loader import load
-from .util import get_model_loader
+from .registry import get_model_loader
 
 app = FastAPI(title="tone inference service")
 
-REGISTRY_URL = os.getenv("REGISTRY_URL", "http://registry:8080")
+REGISTRY_URL = os.getenv("REGISTRY_URL", "http://tone-registry-service:80")
 MODEL_NAME = os.getenv("MODEL_NAME", "tone")
 MODEL_VERSION = os.getenv("MODEL_VERSION", "1.0.0")
-CACHE_DIR = Path(os.getenv("MODEL_CACHE_DIR", "./models"))
+CACHE_DIR = Path(os.getenv("MODEL_CACHE_DIR", "/cache/models"))
 
 artifacts, manifest = load(
     registry=REGISTRY_URL,
@@ -26,7 +28,7 @@ artifacts, manifest = load(
 
 model_dir = Path(artifacts["model"]).parent
 
-loader = get_model_loader(MODEL_NAME, MODEL_VERSION)
+loader = get_model_loader(manifest)
 loader.load(model_dir)
 
 
@@ -40,19 +42,20 @@ class Response(BaseModel):
     scores: list
 
 
+import time
+
+
 @app.post("/v1/infer", response_model=Response)
 async def infer(file: UploadFile = File(...)):
     try:
         audio_bytes = await file.read()
 
-        waveform, sr = torchaudio.load(io.BytesIO(audio_bytes))
+        waveform, sr = sf.read(io.BytesIO(audio_bytes))
 
-        if sr != 16000:
-            waveform = torchaudio.functional.resample(waveform, sr, 16000)
+        if waveform.ndim > 1:
+            waveform = waveform.mean(axis=1)
 
-        waveform = waveform.mean(dim=0)
-        waveform = waveform.numpy()
-        result = loader.infer(waveform, 16000)
+        result = loader.infer(waveform.astype(np.float32), 16000)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
