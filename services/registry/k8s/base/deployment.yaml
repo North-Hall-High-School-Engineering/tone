@@ -18,9 +18,11 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-            - name: manifests-volume
+            - name: registry-manifests
               mountPath: /manifests
+              readOnly: true
+
       volumes:
-        - name: manifests-volume
+        - name: registry-manifests
           configMap:
             name: registry-manifests
