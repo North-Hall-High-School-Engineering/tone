@@ -4,5 +4,5 @@ torch
 transformers
 tqdm
 google-cloud-storage
-librosa
+torchaudio
 python-multipart
