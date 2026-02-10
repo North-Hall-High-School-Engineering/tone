@@ -4,10 +4,6 @@ metadata:
   name: tone-inference
   labels:
     app: tone-inference
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8001"
-    prometheus.io/path: "/metrics"
 spec:
   replicas: 2
   selector:
@@ -22,8 +18,7 @@ spec:
         - name: tone-inference
           image: tone-inference:latest
           ports:
-            - containerPort: 8080 # FastAPI inference
-            - containerPort: 8001 # Prometheus metrics
+            - containerPort: 8080
           env:
             - name: REGISTRY_URL
               value: "http://tone-registry-service:80"
