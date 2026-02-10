@@ -40,7 +40,7 @@ jobs:
       - name: Build and deploy registry
         run: |
           docker buildx build --platform linux/amd64 \
-            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/registry:latest \
+            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-registry:latest \
             ./services/registry --push
 
           kubectl create configmap registry-manifests \
@@ -55,7 +55,7 @@ jobs:
         run: |
 
           docker buildx build --platform linux/amd64 \
-            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/inference:latest \
+            -t us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-inference:latest \
             ./services/inference --push
 
           kubectl apply -k ./services/inference/k8s/overlays/gke
