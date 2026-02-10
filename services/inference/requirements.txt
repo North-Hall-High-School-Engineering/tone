@@ -6,3 +6,4 @@ tqdm
 google-cloud-storage
 librosa
 python-multipart
+prometheus_client

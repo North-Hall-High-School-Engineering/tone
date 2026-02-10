@@ -5,6 +5,7 @@ from pathlib import Path
 import librosa
 import torch
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from prometheus_client import Counter, Summary, start_http_server
 from pydantic import BaseModel
 
 from .loader import load
@@ -16,6 +17,10 @@ REGISTRY_URL = os.getenv("REGISTRY_URL", "http://registry:8080")
 MODEL_NAME = os.getenv("MODEL_NAME", "tone")
 MODEL_VERSION = os.getenv("MODEL_VERSION", "1.0.0")
 CACHE_DIR = Path(os.getenv("MODEL_CACHE_DIR", "./models"))
+
+REQUESTS = Counter("requests_total", "Total inference requests")
+ERRORS = Counter("errors_total", "Total inference errors")
+LATENCY = Summary("inference_latency_ms", "Inference latency per request")
 
 artifacts, manifest = load(
     registry=REGISTRY_URL,
@@ -42,6 +47,7 @@ class Response(BaseModel):
 
 @app.post("/v1/infer", response_model=Response)
 async def infer(file: UploadFile = File(...)):
+    REQUESTS.inc()
     try:
         audio_bytes = await file.read()
 
@@ -51,9 +57,14 @@ async def infer(file: UploadFile = File(...)):
             mono=True,
         )
 
-        result = loader.infer(waveform, 16000)
+        with LATENCY.time():
+            result = loader.infer(waveform, 16000)
 
     except Exception as e:
+        ERRORS.inc()
         raise HTTPException(status_code=500, detail=str(e))
 
     return Response(prediction=result["prediction"], scores=result["scores"])
+
+
+start_http_server(8001)
