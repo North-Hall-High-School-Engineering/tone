@@ -1,0 +1,7 @@
+resources:
+  - ../../base
+
+images:
+  - name: tone-registry
+    newName: us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-registry
+    newTag: latest

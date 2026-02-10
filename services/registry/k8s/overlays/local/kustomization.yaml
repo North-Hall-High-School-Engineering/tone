@@ -1,0 +1,16 @@
+resources:
+  - ../../base
+
+images:
+  - name: tone-registry
+    newName: tone-registry
+    newTag: dev
+
+patches:
+  - target:
+      kind: Deployment
+      name: tone-registry
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Never

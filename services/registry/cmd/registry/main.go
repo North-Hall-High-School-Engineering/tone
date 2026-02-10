@@ -12,7 +12,7 @@ import (
 func main() {
 	basePath := os.Getenv("MODEL_MANIFEST_PATH")
 	if basePath == "" {
-		basePath = "./manifests"
+		basePath = "/manifests"
 	}
 
 	h := &api.Handler{

@@ -1,0 +1,41 @@
+resources:
+  - ../../base
+
+images:
+  - name: tone-inference
+    newName: tone-inference
+    newTag: dev
+
+patches:
+  - target:
+      kind: Deployment
+      name: tone-inference
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Never
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value:
+          name: gcp-sa-volume
+          mountPath: /secrets/gcp
+          readOnly: true
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /secrets/gcp/key.json
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: GOOGLE_CLOUD_PROJECT
+          value: tone-486901
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: gcp-sa-volume
+          secret:
+            secretName: gcp-sa

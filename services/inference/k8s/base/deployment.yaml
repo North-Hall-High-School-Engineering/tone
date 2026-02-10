@@ -15,9 +15,8 @@ spec:
         app: tone-inference
     spec:
       containers:
-        - name: inference
-          image: us-east1-docker.pkg.dev/tone-486901/tone-repo/inference:latest
-          imagePullPolicy: Always
+        - name: tone-inference
+          image: tone-inference
           ports:
             - containerPort: 8080
           env:

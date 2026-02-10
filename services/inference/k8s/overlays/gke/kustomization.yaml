@@ -1,0 +1,16 @@
+resources:
+  - ../../base
+
+images:
+  - name: tone-inference
+    newName: us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-inference
+    newTag: latest
+
+patches:
+  - target:
+      kind: Deployment
+      name: tone-inference
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always

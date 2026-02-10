@@ -14,6 +14,13 @@ spec:
     spec:
       containers:
         - name: tone-registry
-          image: us-east1-docker.pkg.dev/tone-486901/tone-repo/tone-registry:latest
+          image: tone-registry
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: manifests-volume
+              mountPath: /manifests
+      volumes:
+        - name: manifests-volume
+          configMap:
+            name: registry-manifests
