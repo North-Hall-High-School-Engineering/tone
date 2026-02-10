@@ -2,7 +2,6 @@ import io
 import os
 from pathlib import Path
 
-import librosa
 import torch
 import torchaudio
 from fastapi import FastAPI, File, HTTPException, UploadFile
