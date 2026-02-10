@@ -6,3 +6,4 @@ tqdm
 google-cloud-storage
 torchaudio
 python-multipart
+torchcodec
