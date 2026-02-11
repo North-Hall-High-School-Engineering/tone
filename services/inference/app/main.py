@@ -101,7 +101,6 @@ async def stream(websocket: WebSocket):
 
                     if is_speech_end:
                         if audio_buffer.shape[0] < MIN_UTTERANCE_LEN:
-                            print("too short: ", audio_buffer.shape[0])
                             audio_buffer = np.array([], dtype=np.float32)
                             triggered = False
                             continue
