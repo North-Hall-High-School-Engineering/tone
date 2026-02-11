@@ -9,3 +9,5 @@ python-multipart
 torchcodec
 onnxruntime
 soundfile
+gunicorn
+webrtcvad

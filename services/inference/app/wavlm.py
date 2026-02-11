@@ -52,16 +52,8 @@ class WavLMOnnxLoader(BaseModelLoader):
         self.feature_extractor: AutoFeatureExtractor | None = None
 
     def load(self, model_dir: Path) -> None:
-        sess_options = ort.SessionOptions()
-        sess_options.graph_optimization_level = (
-            ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-        )
-        sess_options.intra_op_num_threads = os.cpu_count() or 1
-        sess_options.inter_op_num_threads = 2
-
         self.session = ort.InferenceSession(
             str(model_dir / "model.onnx"),
-            sess_options=sess_options,
             providers=["CPUExecutionProvider"],
         )
 

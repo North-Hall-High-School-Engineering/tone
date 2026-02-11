@@ -65,7 +65,7 @@ def get_artifacts(manifest, cache_dir: Path):
     return local_paths
 
 
-def load(*, registry: str, model_name: str, model_version: str, cache_dir: Path):
+def load(registry: str, model_name: str, model_version: str, cache_dir: Path):
     manifest = get_manifest(
         registry=registry, model_name=model_name, model_version=model_version
     )
