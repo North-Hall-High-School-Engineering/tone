@@ -5,6 +5,11 @@ metadata:
   labels:
     app: tone-inference
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: tone-inference
@@ -30,13 +35,6 @@ spec:
           volumeMounts:
             - name: model-cache
               mountPath: /cache/models
-          resources:
-            requests:
-              cpu: 4
-              memory: 8Gi
-            limits:
-              cpu: 8
-              memory: 12Gi
       volumes:
         - name: model-cache
           emptyDir: {}
