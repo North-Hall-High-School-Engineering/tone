@@ -10,4 +10,4 @@ torchcodec
 onnxruntime
 soundfile
 gunicorn
-webrtcvad
+silero-vad
