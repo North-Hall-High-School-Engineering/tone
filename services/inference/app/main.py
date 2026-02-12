@@ -92,7 +92,6 @@ async def stream(websocket: WebSocket):
                 is_speech_end = speech_events is not None and "end" in speech_events
 
                 if is_speech_start and not triggered:
-                    print("start")
                     if len(ring_buffer) > 0:
                         audio_buffer = np.concatenate([audio_buffer, *ring_buffer])
                     ring_buffer.clear()
@@ -102,7 +101,6 @@ async def stream(websocket: WebSocket):
                     audio_buffer = np.concatenate((audio_buffer, chunk))
 
                     if is_speech_end:
-                        print("end")
                         if audio_buffer.shape[0] < MIN_UTTERANCE_LEN:
                             audio_buffer = np.array([], dtype=np.float32)
                             triggered = False

@@ -18,7 +18,6 @@ import (
 	"github.com/gopxl/beep/v2"
 )
 
-// windowsLoopback implements Loopback for Windows WASAPI
 type windowsLoopback struct {
 	lb *C.Loopback
 }
