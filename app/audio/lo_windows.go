@@ -4,7 +4,7 @@
 package audio
 
 /*
-#cgo LDFLAGS: -lole32 -luuid -loleaut32
+#cgo LDFLAGS: -lole32 -luuid -loleaut32 -lavrt
 #include "lo_windows.h"
 */
 import "C"
@@ -95,10 +95,9 @@ func (w *windowsLoopback) Read() ([]float32, error) {
 
 	var out []float32
 	for {
-		buf := make([][2]float64, 1024) // <-- must be [2]float64, not [1]
+		buf := make([][2]float64, 1024)
 		n, ok := resampled.Stream(buf)
 		for i := 0; i < n; i++ {
-			// pick left channel (both are identical since mono)
 			out = append(out, float32(buf[i][0]))
 		}
 		if !ok {

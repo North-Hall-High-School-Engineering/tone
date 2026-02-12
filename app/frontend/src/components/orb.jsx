@@ -73,9 +73,8 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
 
     const material = new THREE.MeshPhongMaterial({
       color: colorRef.current,
-      shininess: 100,
+      shininess: 20,
       transparent: true,
-      opacity: 0.5,
     });
     materialRef.current = material;
 

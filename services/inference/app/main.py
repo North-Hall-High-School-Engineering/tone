@@ -24,15 +24,6 @@ from .registry import get_model_loader
 app = FastAPI()
 
 
-def normalize_rms(audio: np.ndarray, target_rms: float = 0.1) -> np.ndarray:
-    if audio.size == 0:
-        return audio
-    rms = np.sqrt(np.mean(audio**2))
-    if rms == 0:
-        return audio
-    return audio * (target_rms / rms)
-
-
 REGISTRY_URL = os.getenv("REGISTRY_URL", "http://tone-registry-service:80")
 MODEL_NAME = os.getenv("MODEL_NAME", "tone")
 MODEL_VERSION = os.getenv("MODEL_VERSION", "1.0.1")
@@ -116,8 +107,6 @@ async def stream(websocket: WebSocket):
                             audio_buffer = np.array([], dtype=np.float32)
                             triggered = False
                             continue
-
-                        # utterance_np = normalize_rms(audio_buffer)
 
                         utterance_np = audio_buffer
                         results = loader.infer(
