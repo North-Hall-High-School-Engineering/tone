@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "model": {
+    "name": "tone",
+    "version": "1.0.2",
+    "sha256": "aeaf148ae913d0197658155dbc7f8545a2c7c92ef371bf5f9ae56cecfed2356d",
+    "size_bytes": 1267429671,
+    "format": "onnx"
+  },
+
+  "audio": {
+    "sample_rate": 16000,
+    "channels": 1
+  },
+
+  "labels": {
+    "angry": 0,
+    "disgust": 1,
+    "fearful": 2,
+    "happy": 3,
+    "neutral": 4,
+    "sad": 5
+  },
+
+  "artifacts": {
+    "model": {
+      "url": "gs://tone-ml/tone/1.0.2/model.onnx",
+      "sha256": "aeaf148ae913d0197658155dbc7f8545a2c7c92ef371bf5f9ae56cecfed2356d",
+      "type": "gcs"
+    },
+    "feature_extractor": {
+      "url": "gs://tone-ml/tone/1.0.2/preprocessor_config.json",
+      "sha256": "60ca5a31e13f69ee2fbf147504c8676db5f6398fd7a6b12294341dff838edfcf",
+      "type": "gcs"
+    }
+  }
+}
