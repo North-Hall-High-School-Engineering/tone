@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type App struct {
@@ -55,6 +56,14 @@ func (a *App) send(ctx context.Context) {
 				continue
 			}
 
+			var sum float64
+			for _, s := range samples {
+				sum += float64(s * s)
+			}
+			rms := math.Sqrt(sum / float64(len(samples)))
+
+			runtime.EventsEmit(a.ctx, "loudness", rms)
+
 			data := float32SliceToBytes(samples)
 			err = a.ws.WriteMessage(websocket.BinaryMessage, data)
 			if err != nil {
@@ -82,6 +91,11 @@ func (a *App) recv(ctx context.Context) {
 			if err := json.Unmarshal(msg, &payload); err != nil {
 				log.Printf("invalid JSON received: %v", err)
 				continue
+			}
+
+			switch payload["type"] {
+			case "inference":
+				runtime.EventsEmit(a.ctx, "inference", payload["scores"])
 			}
 
 			log.Printf("received JSON: %+v", payload)
