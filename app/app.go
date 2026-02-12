@@ -4,8 +4,11 @@ import (
 	"app/audio"
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"math"
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -13,9 +16,10 @@ import (
 )
 
 type App struct {
-	ctx context.Context
-	lo  audio.Loopback
-	ws  *websocket.Conn
+	ctx    context.Context
+	lo     audio.Loopback
+	ws     *websocket.Conn
+	labels []string
 }
 
 func NewApp() *App {
@@ -27,6 +31,10 @@ func (a *App) startup(ctx context.Context) {
 	a.lo = audio.NewLoopback()
 
 	if err := a.lo.Start(); err != nil {
+		panic(err)
+	}
+
+	if err := a.fetchLabels(); err != nil {
 		panic(err)
 	}
 
@@ -95,12 +103,62 @@ func (a *App) recv(ctx context.Context) {
 
 			switch payload["type"] {
 			case "inference":
-				runtime.EventsEmit(a.ctx, "inference", payload["scores"])
-			}
+				rawScores, ok := payload["scores"].([]interface{})
+				if !ok {
+					log.Println("invalid scores format")
+					continue
+				}
 
+				results := make([]map[string]interface{}, len(rawScores))
+
+				for i, s := range rawScores {
+					scoreFloat, _ := s.(float64)
+
+					label := ""
+					if i < len(a.labels) {
+						label = a.labels[i]
+					}
+
+					results[i] = map[string]interface{}{
+						"label": label,
+						"score": scoreFloat,
+					}
+				}
+
+				runtime.EventsEmit(a.ctx, "inference", results)
+			}
 			log.Printf("received JSON: %+v", payload)
 		}
 	}
+}
+
+type LabelsResponse struct {
+	Model   string   `json:"model"`
+	Version string   `json:"version"`
+	Labels  []string `json:"labels"`
+}
+
+func (a *App) fetchLabels() error {
+	resp, err := http.Get("http://localhost:8000/v1/labels")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("labels request failed: %s", string(body))
+	}
+
+	var lr LabelsResponse
+	if err := json.NewDecoder(resp.Body).Decode(&lr); err != nil {
+		return err
+	}
+
+	a.labels = lr.Labels
+
+	log.Printf("Loaded labels: %+v", a.labels)
+	return nil
 }
 
 func (a *App) shutdown(ctx context.Context) {

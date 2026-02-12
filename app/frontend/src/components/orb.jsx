@@ -6,7 +6,6 @@ import { createNoise3D } from "simplex-noise";
 export function Orb({ displacementStrength, noiseIntensity, color }) {
   const mountRef = useRef(null);
 
-  // Three.js refs
   const sceneRef = useRef();
   const cameraRef = useRef();
   const rendererRef = useRef();
@@ -16,12 +15,10 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
   const originalPositionsRef = useRef();
   const simplexRef = useRef();
 
-  // Prop refs to hold latest values
   const displacementStrengthRef = useRef(displacementStrength);
   const noiseIntensityRef = useRef(noiseIntensity);
   const colorRef = useRef(color);
 
-  // Update refs whenever props change
   useEffect(() => {
     displacementStrengthRef.current = displacementStrength;
   }, [displacementStrength]);
@@ -40,11 +37,9 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // Camera
     const camera = new THREE.PerspectiveCamera(
       45,
       mountRef.current.clientWidth / mountRef.current.clientHeight,
@@ -54,7 +49,6 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
     camera.position.z = 3;
     cameraRef.current = camera;
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(
       mountRef.current.clientWidth,
@@ -63,7 +57,6 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Lights
     const lightTop = new THREE.DirectionalLight(0xffffff, 0.7);
     lightTop.position.set(0, 5, 5);
     scene.add(lightTop);
@@ -75,13 +68,14 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
     const ambientLight = new THREE.AmbientLight(0x798296);
     scene.add(ambientLight);
 
-    // Sphere
     const geometry = new THREE.SphereGeometry(1, 128, 128);
     geometryRef.current = geometry;
 
     const material = new THREE.MeshPhongMaterial({
       color: colorRef.current,
       shininess: 100,
+      transparent: true,
+      opacity: 0.5,
     });
     materialRef.current = material;
 
@@ -134,5 +128,11 @@ export function Orb({ displacementStrength, noiseIntensity, color }) {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100%", height: "100%" }} />;
+  return (
+    <div
+      ref={mountRef}
+      className="mx-auto mt-4"
+      style={{ width: "90%", height: "90%" }}
+    />
+  );
 }

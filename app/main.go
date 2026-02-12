@@ -18,6 +18,8 @@ func main() {
 		Width:         360,
 		Height:        560,
 		DisableResize: true,
+		Frameless:     true,
+		AlwaysOnTop:   true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

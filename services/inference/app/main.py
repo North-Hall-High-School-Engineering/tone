@@ -117,8 +117,9 @@ async def stream(websocket: WebSocket):
                             triggered = False
                             continue
 
-                        utterance_np = normalize_rms(audio_buffer)
+                        # utterance_np = normalize_rms(audio_buffer)
 
+                        utterance_np = audio_buffer
                         results = loader.infer(
                             utterance_np,
                             SAMPLE_RATE,
@@ -138,3 +139,20 @@ async def stream(websocket: WebSocket):
         print("WebSocket disconnected")
     finally:
         await websocket.close()
+
+
+@app.get("/v1/labels")
+async def get_labels():
+    raw_labels = manifest.get("labels")
+    if not raw_labels:
+        raise HTTPException(status_code=404, detail="Labels not found in manifest")
+
+    sorted_labels = [
+        label for label, _ in sorted(raw_labels.items(), key=lambda x: x[1])
+    ]
+
+    return {
+        "model": manifest["model"]["name"],
+        "version": manifest["model"]["version"],
+        "labels": sorted_labels,
+    }
