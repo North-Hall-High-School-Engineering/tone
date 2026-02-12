@@ -6,25 +6,25 @@ import { EventsOn } from "../wailsjs/runtime";
 const EMOTION_STYLE = {
   angry: {
     color: 0xef4444,
-    noise: 1.8,
+    noise: 1.0,
     pulse: 2.2,
     glow: 1.4,
   },
   disgust: {
     color: 0x65a30d,
-    noise: 1.2,
+    noise: 0.8,
     pulse: 0.6,
     glow: 0.8,
   },
   fearful: {
     color: 0x7c3aed,
-    noise: 1.6,
+    noise: 0.6,
     pulse: 1.8,
     glow: 1.1,
   },
   happy: {
     color: 0xfbbf24,
-    noise: 1.0,
+    noise: 0.8,
     pulse: 1.6,
     glow: 1.6,
   },
@@ -53,6 +53,9 @@ export function App(props) {
 
   useEffect(() => {
     const loudnessCb = EventsOn("loudness", (rms) => {
+      if (rms<.00001){
+        return;
+      }
       smoothLoudnessRef.current =
         smoothLoudnessRef.current * (1 - SMOOTHING) + rms * SMOOTHING;
 
