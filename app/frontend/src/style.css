@@ -6,6 +6,5 @@
     --wails-draggable: drag;
     align-items: center;
     position: absolute;
-    padding-left: 12px;
     user-select: none;
 }
