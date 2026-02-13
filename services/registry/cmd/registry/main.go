@@ -25,7 +25,7 @@ func main() {
 	}
 
 	log.Printf("listening on :%s", port)
-	if err := http.ListenAndServe(":8080", api.Routes(h)); err != nil {
+	if err := http.ListenAndServe(":"+port, api.Routes(h)); err != nil {
 		log.Fatal(err)
 	}
 
