@@ -9,24 +9,24 @@ from tqdm import tqdm
 
 RAVDESS_EMOTIONS = {
     "01": "neutral",
-    "02": "calm",
+    # "02": "calm",
     "03": "happy",
     "04": "sad",
     "05": "angry",
     "06": "fearful",
     "07": "disgust",
-    "08": "surprised",
+    # "08": "surprised",
 }
 
 TESS_EMOTIONS = {
     "neutral": "neutral",
-    "calm": "calm",
+    # "calm": "calm",
     "happy": "happy",
     "sad": "sad",
     "angry": "angry",
     "fear": "fearful",
     "disgust": "disgust",
-    "ps": "surprised",
+    # "ps": "surprised",
 }
 
 CREMA_EMOTIONS = {
@@ -40,7 +40,7 @@ CREMA_EMOTIONS = {
 
 EMODB_EMOTIONS = {
     "W": "angry",
-    "L": "boredom",
+    # "L": "boredom",
     "E": "disgust",
     "A": "fearful",
     "F": "happy",

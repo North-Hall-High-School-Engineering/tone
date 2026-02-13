@@ -5,15 +5,20 @@ import urllib.request
 import zipfile
 
 import evaluate
+import librosa
 import numpy as np
 import torch
-from audiomentations import AddGaussianNoise, Compose, TimeStretch
+from audiomentations import AddGaussianNoise, Compose, Gain, PitchShift, TimeStretch
 from dataset_util import *
 from datasets import Audio, Dataset
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    precision_recall_fscore_support,
+)
 from tqdm import tqdm
 from transformers import (
     AutoFeatureExtractor,
-    AutoModel,
     DataCollatorWithPadding,
     EarlyStoppingCallback,
     Trainer,
@@ -27,12 +32,10 @@ OUT_DIR = os.path.join(SCRIPT_DIR, "out")
 
 MODEL_NAME = "microsoft/wavlm-large"
 BATCH_SIZE = 32
-EPOCHS = 6
+EPOCHS = 15
 LR = 2e-5
 MAX_SAMPLES = 16000 * 5
 N_PROC = os.cpu_count() or 1
-
-accuracy = evaluate.load("accuracy")
 
 os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -41,27 +44,38 @@ feature_extractor = AutoFeatureExtractor.from_pretrained(MODEL_NAME)
 augment = Compose(
     [
         AddGaussianNoise(min_amplitude=0.001, max_amplitude=0.010, p=0.25),
-        TimeStretch(min_rate=0.9, max_rate=1.1, p=0.25),
+        TimeStretch(min_rate=0.8, max_rate=1.2, p=0.25),
+        PitchShift(min_semitones=-2, max_semitones=2, p=0.25),
+        Gain(min_gain_db=-6, max_gain_db=6, p=0.5),
     ]
 )
-
-
-def compute_metrics(eval_pred):
-    logits, labels = eval_pred
-    preds = np.argmax(logits, axis=-1)
-    acc = accuracy.compute(predictions=preds, references=labels)["accuracy"]
-
-    return {"accuracy": acc}
 
 
 def augment_waveform(wav, sr):
     return augment(samples=wav, sample_rate=sr)
 
 
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    preds = np.argmax(logits, axis=-1)
+
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels, preds, average="weighted"
+    )
+    acc = accuracy_score(labels, preds)
+
+    return {"accuracy": acc, "f1": f1, "precision": precision, "recall": recall}
+
+
 def preprocess(batch, train=False):
     audio = batch["audio"]
     wav = audio["array"]
     sr = audio["sampling_rate"]
+
+    wav, _ = librosa.effects.trim(wav, top_db=30)
+
+    if len(wav) > 0:
+        wav = librosa.util.normalize(wav)
 
     if len(wav) > MAX_SAMPLES:
         wav = wav[:MAX_SAMPLES]
@@ -133,7 +147,7 @@ def main():
     )
 
     training_args = TrainingArguments(
-        output_dir="./wavlm_checkpoints",
+        output_dir="./checkpoints",
         eval_strategy="epoch",
         save_strategy="epoch",
         learning_rate=LR,
@@ -149,6 +163,8 @@ def main():
         report_to="none",
         remove_unused_columns=False,
         dataloader_pin_memory=True,
+        lr_scheduler_type="cosine",
+        weight_decay=0.01,
     )
 
     data_collator = DataCollatorWithPadding(

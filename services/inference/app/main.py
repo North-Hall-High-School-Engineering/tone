@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 import torch
+import torch.nn.functional as F
 from fastapi import (
     FastAPI,
     File,
@@ -112,8 +113,24 @@ async def stream(websocket: WebSocket):
                             SAMPLE_RATE,
                         )
 
+                        raw_labels = manifest["labels"]
+                        sorted_labels = [
+                            label
+                            for label, _ in sorted(
+                                raw_labels.items(), key=lambda x: x[1]
+                            )
+                        ]
+
+                        logits = torch.tensor(results["scores"])
+                        probs = F.softmax(logits, dim=0)
+
+                        predictions = [
+                            {"label": sorted_labels[i], "score": probs[i].item()}
+                            for i in range(len(sorted_labels))
+                        ]
+
                         await websocket.send_json(
-                            {"type": "inference", "scores": results["scores"]}
+                            {"type": "inference", "predictions": predictions}
                         )
 
                         audio_buffer = np.array([], dtype=np.float32)

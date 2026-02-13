@@ -53,7 +53,7 @@ export function App(props) {
 
   useEffect(() => {
     const loudnessCb = EventsOn("loudness", (rms) => {
-      if (rms<.00001){
+      if (rms < 0.00001) {
         return;
       }
       smoothLoudnessRef.current =
@@ -68,16 +68,14 @@ export function App(props) {
       setLoudness(normalized);
     });
 
-    const inferenceCb = EventsOn("inference", (preds) => {
-      if (!Array.isArray(preds)) return;
+    const inferenceCb = EventsOn("inference", (payload) => {
+      if (!payload || !Array.isArray(payload.predictions)) return;
 
-      const sorted = [...preds].sort((a, b) => b.score - a.score);
+      const sorted = [...payload.predictions].sort((a, b) => b.score - a.score);
 
       setPredictions(sorted);
-
-      if (sorted.length > 0) {
-        setTopLabel(sorted[0]);
-      }
+      ("");
+      setTopLabel(sorted[0] ?? null);
     });
 
     return () => {
@@ -110,6 +108,65 @@ export function App(props) {
           glowStrength={glowStrength}
           color={style.color}
         />
+      </div>
+      <div className="w-full flex flex-col items-center mt-6 space-y-4 px-12">
+        {/* Top Emotion */}
+        <div className="text-center transition-all duration-500">
+          <div
+            className="text-4xl font-light tracking-wide"
+            style={{
+              color: `#${style.color.toString(16)}`,
+              opacity: 0.9,
+            }}
+          >
+            {label}
+          </div>
+
+          <div className="text-sm text-gray-400 mt-1 tracking-wider">
+            {(confidence * 100).toFixed(1)}% confidence
+          </div>
+
+          {/* Confidence Bar */}
+          <div className="mt-3 h-[3px] w-64 bg-gray-800 rounded-full overflow-hidden">
+            <div
+              className="h-full transition-all duration-700 ease-out"
+              style={{
+                width: `${confidence * 100}%`,
+                background: `#${style.color.toString(16)}`,
+                boxShadow: `0 0 12px #${style.color.toString(16)}`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Ranked Predictions */}
+        <div className="w-80 space-y-2">
+          {predictions.slice(0, 5).map((p, i) => (
+            <div key={p.label} className="flex items-center space-x-3">
+              <div className="w-20 text-xs text-gray-400 tracking-wide">
+                {p.label}
+              </div>
+
+              <div className="flex-1 h-[2px] bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full transition-all duration-700 ease-out"
+                  style={{
+                    width: `${p.score * 100}%`,
+                    background:
+                      p.label === label
+                        ? `#${style.color.toString(16)}`
+                        : "#4b5563",
+                    opacity: p.label === label ? 1 : 0.5,
+                  }}
+                />
+              </div>
+
+              <div className="text-xs text-gray-500 w-10 text-right">
+                {(p.score * 100).toFixed(0)}%
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

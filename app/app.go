@@ -103,30 +103,34 @@ func (a *App) recv(ctx context.Context) {
 
 			switch payload["type"] {
 			case "inference":
-				rawScores, ok := payload["scores"].([]interface{})
+				rawPreds, ok := payload["predictions"].([]interface{})
 				if !ok {
-					log.Println("invalid scores format")
+					log.Println("invalid predictions format")
 					continue
 				}
 
-				results := make([]map[string]interface{}, len(rawScores))
+				results := make([]map[string]interface{}, 0, len(rawPreds))
 
-				for i, s := range rawScores {
-					scoreFloat, _ := s.(float64)
-
-					label := ""
-					if i < len(a.labels) {
-						label = a.labels[i]
+				for _, p := range rawPreds {
+					predMap, ok := p.(map[string]interface{})
+					if !ok {
+						continue
 					}
 
-					results[i] = map[string]interface{}{
+					label, _ := predMap["label"].(string)
+					score, _ := predMap["score"].(float64)
+
+					results = append(results, map[string]interface{}{
 						"label": label,
-						"score": scoreFloat,
-					}
+						"score": score,
+					})
 				}
 
-				runtime.EventsEmit(a.ctx, "inference", results)
+				runtime.EventsEmit(a.ctx, "inference", map[string]interface{}{
+					"predictions": results,
+				})
 			}
+
 			log.Printf("received JSON: %+v", payload)
 		}
 	}
