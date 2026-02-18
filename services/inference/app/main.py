@@ -27,13 +27,13 @@ app = FastAPI()
 REGISTRY_URL = os.getenv("REGISTRY_URL", "http://tone-registry-service:80")
 MODEL_NAME = os.getenv("MODEL_NAME", "tone")
 MODEL_VERSION = os.getenv("MODEL_VERSION", "1.0.2")
-CACHE_DIR = Path(os.getenv("MODEL_CACHE_DIR", "/cache/models"))
+CACHE_PATH = Path(os.getenv("MODEL_CACHE_PATH", "/cache/models"))
 
 artifacts, manifest = load(
     REGISTRY_URL,
     MODEL_NAME,
     MODEL_VERSION,
-    CACHE_DIR,
+    CACHE_PATH,
 )
 model_dir = Path(artifacts["model"]).parent
 loader = get_model_loader(manifest)

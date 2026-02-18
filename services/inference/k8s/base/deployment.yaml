@@ -30,7 +30,7 @@ spec:
               value: "tone"
             - name: MODEL_VERSION
               value: "1.0.2"
-            - name: MODEL_CACHE_DIR
+            - name: MODEL_CACHE_PATH
               value: "/cache/models"
           volumeMounts:
             - name: model-cache
