@@ -39,9 +39,6 @@ func (m *Manifest) Validate() error {
 		if m.Audio.Channels <= 0 {
 			return fmt.Errorf("audio.channels must be > 0")
 		}
-		if m.Audio.MaxDurationMS <= 0 {
-			return fmt.Errorf("audio.max_duration_ms must be > 0")
-		}
 	}
 
 	if m.Labels != nil && len(m.Labels) == 0 {

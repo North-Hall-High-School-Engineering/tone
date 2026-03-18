@@ -10,8 +10,7 @@
 
   "audio": {
     "sample_rate": 16000,
-    "channels": 1,
-    "max_duration_ms": 5000
+    "channels": 1
   },
 
   "labels": {

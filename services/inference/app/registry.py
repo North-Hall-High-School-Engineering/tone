@@ -10,6 +10,9 @@ MODEL_REGISTRY: dict[str, dict[str, dict[str, type[BaseModelLoader]]]] = {
         "1.0.1": {
             "onnx": WavLMOnnxLoader,
         },
+        "1.0.2": {
+            "onnx": WavLMOnnxLoader,
+        },
     }
 }
 
